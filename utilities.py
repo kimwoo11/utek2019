@@ -54,6 +54,11 @@ class Package:
         self.product_number = product_number
         self.weight = weight
 
+class Robot:
+	def __init__(self, instructions, x, y):
+		self.instructions = instructions
+		self.x = x
+		self.y = y
 
 class Robot:
 	def __init__(self, instructions, x, y):
