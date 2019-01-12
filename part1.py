@@ -28,7 +28,7 @@ def aggregate(filename):
 
     # write to the output file
     for line in lines:
-        f.write("Product Number: {},; Weight: {}; Qty: {}; Location: {}"
+        f.write("Product Number:{}; Weight:{}; Qty: {}; Location:{}"
                 .format(line[2], line[3], num_of_product[line[2]], (int(line[0]), int(line[1]))))
         f.write("\n")
 
