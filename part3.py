@@ -100,25 +100,28 @@ def astar(maze, start, end):
             open_list.append(child)
 
 
-def build_output(packages, sequence):
-    f = open('data/2a.out', 'w+')
+def build_output(packages, sequence, maze):
+    f = open('data/3a.out', 'w+')
+    origin = (0, 0)
+
     for sub in sequence:
-        curr_x = 0
-        curr_y = 0
+        curr_pose = origin
+        for i in sub:
+            target = (packages[i].x, packages[i].y)
+            if target != curr_pose:
+                path = astar(maze, curr_pose, target)
+                curr_pose = target
+                for j in range(len(path)):
+                    f.write("move " + str(path[j][0]) + " " + str(path[j][1]) + '\n')
+            f.write("pick " + str(packages[i].product_number) + '\n')
+
+        target = origin
+        path = astar(maze, curr_pose, target)
+        for j in range(len(path)):
+            f.write("move " + str(path[j][0]) + " " + str(path[j][1]) + '\n')
         for index in sub:
-            target_x = packages[index].x
-            target_y = packages[index].y
-            while (curr_x - target_x != 0 and curr_y - target_y != 0):
-                xdir = 0
-                ydir = 0
-                if curr_x > target_x:
-                    xdir = -1
-                if curr_x < target_x:
-                    xdir = 1
-                if curr_y > target_y:
-                    ydir = -1
-                if curr_y < target_y:
-                    ydir = 1
+            f.write("drop " + str(packages[index].product_number) + '\n')
+
 
 def convert_cluster_to_sequence(packages, cluster, maze):
     curr_x = 0
@@ -219,5 +222,7 @@ if __name__ == '__main__':
 
     clusters = part3(packages)
     print(clusters)
-    print(convert_clusters_to_sequence(packages, clusters, maze))
+    sequence = convert_clusters_to_sequence(packages, clusters, maze)
+    print(sequence)
+    build_output(packages, sequence, maze)
 
