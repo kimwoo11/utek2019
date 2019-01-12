@@ -1,4 +1,3 @@
-from typing import List, Any
 
 
 def parse_input(file_name):
