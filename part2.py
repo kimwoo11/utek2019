@@ -8,7 +8,7 @@ def build_output(packages, sequence):
 		for index in sub:
 			target_x = packages[index].x
 			target_y = packages[index].y
-			while(curr_x - target_x != 0 and curr_y - target_y != 0):
+			while(curr_x - target_x != 0 or curr_y - target_y != 0):
 				xdir = 0
 				ydir = 0
 				if curr_x > target_x:
@@ -19,7 +19,28 @@ def build_output(packages, sequence):
 					ydir = -1
 				if curr_y < target_y:
 					ydir = 1
-				
+				curr_x = curr_x + xdir
+				curr_y = curr_y + ydir
+				f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
+			f.write("pick " + str(packages[index].product_number) + '\n')
+
+		# Go back to 0, 0:
+		while(curr_x != 0 or curr_y != 0):
+			xdir = 0
+			ydir = 0
+			if curr_x > 0:
+				xdir = -1
+			if curr_x < 0:
+				xdir = 1
+			if curr_y > 0:
+				ydir = -1
+			if curr_y < 0:
+				ydir = 1
+			curr_x = curr_x + xdir
+			curr_y = curr_y + ydir
+			f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
+		for index in sub:
+			f.write("drop "+ str(packages[index].product_number) + '\n')
 
 
 def distance(ind,packages,curr_x,curr_y):
@@ -107,4 +128,6 @@ if __name__ == '__main__':
 	packages = parse_input('2a.in')[0]
 	clusters = part2(packages)
 	print(clusters)
-	print(convert_clusters_to_sequence(packages, clusters))
+	sequence = convert_clusters_to_sequence(packages, clusters)
+	print(sequence)
+	build_output(packages, sequence)
