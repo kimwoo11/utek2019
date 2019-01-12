@@ -62,6 +62,13 @@ class Robot:
 		self.load = load
 		self.carry = carry
 
+class Robot:
+	def __init__(self, instructions, x, y):
+		self.instructions = instructions
+		self.x = x
+		self.y = y
+
+
 class Obstacle:
     def __init__(self, x1, y1, x2, y2):
         self.x1 = x1
