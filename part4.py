@@ -23,7 +23,7 @@ def break_up_sequences_by_robot(packages, sequences, num_robots):
 		sequences.append(split[:len(split)//2])
 
 	for i in range(num_robots):
-		r = Robot([],i,0, 0)
+		r = Robot([],i,0, 0,0)
 
 	while(len(sequences)!=0):
 		instruction = sequences[0]
@@ -41,8 +41,8 @@ def break_up_sequences_by_robot(packages, sequences, num_robots):
 
 	return robots
 
-def build_output(packages, sequence):
-	f = open('data/2a.out', 'w+')
+def build_output(packages, robots):
+	f = open('data/4a.out', 'w+')
 	for sub in sequence:
 		curr_x = 0
 		curr_y = 0
@@ -82,6 +82,64 @@ def build_output(packages, sequence):
 			f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
 		for index in sub:
 			f.write("drop "+ str(packages[index].product_number) + '\n')
+
+
+
+	f = open('data/4a.out', 'w+')
+	num_packages_visited = 0
+
+	while(num_visited_packages < len(packages)):
+		curr_line = ""
+		for robot in robots:
+			# Check to see if we should return home!!!
+			if len(robot.instructions[0]) == robot.carry:
+				#Robot is dropping things home
+				if robot.x == 0 and robot.y == 0:
+					if robot.carry == 0:
+						del robot.instructions[0]
+					else:
+						curr_line += "drop " + str(packages[robot.instructions[0][robot.carry]].product_number + ';')
+						robot.carry-=1
+						continue
+
+				xdir = 0
+				ydir = 0
+				if robot.x > 0:
+					xdir = -1
+				if robot.x < 0:
+					xdir = 1
+				if robot.y > 0:
+					ydir = -1
+				if robot.y < 0:
+					ydir = 1
+				robot.x = robot.x + xdir
+				robot.y = robot.y + ydir
+				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';')
+				continue
+
+
+			target_x = packages[robot.instructions[0][robot.carry]].x
+			target_y = packages[robot.instructions[0][robot.carry]].y
+			if robot.x == target_x and robot.y == target_y:
+				curr_line += "pick " + str(packages[robot.instructions[0][robot.carry]].product_number + ';')
+				robot.carry+=1
+
+			else:
+				xdir = 0
+				ydir = 0
+				if robot.x > target_x:
+					xdir = -1
+				if robot.x < target_x:
+					xdir = 1
+				if robot.y > target_y:
+					ydir = -1
+				if robot.y < target_y:
+					ydir = 1
+				robot.x = robot.x + xdir
+				robot.y = robot.y + ydir
+				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';')
+		curr_line += '\n'
+
 
 
 def distance(ind,packages,curr_x,curr_y):
@@ -166,10 +224,10 @@ def get_clusters(packages):
 	return clusters
 
 if __name__ == '__main__':
-	packages, obstacles, num_robots = parse_input('2a.in')
+	packages, obstacles, num_robots = parse_input('4a.in')
 	clusters = get_clusters(packages)
 	print(clusters)
 	sequences = convert_clusters_to_sequence(packages, clusters)
 	robots = break_up_sequences_by_robot(packages, sequences, num_robots)
 	print(sequences)
-	#build_output(packages, sequence)
+	build_output(packages, robots)
