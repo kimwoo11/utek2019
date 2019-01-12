@@ -21,9 +21,6 @@ def parse_input(file_name):
         packages.append(p)
         j = j + 1
 
-    print(len(lines))
-    print(j)
-    print(num_obstacles)
     for i in range(j, j+int(num_obstacles)):
         # Create a obstacle object, append to obstacle array
         values = lines[i][1:len(lines[i]) - 1].split(', ')
@@ -43,8 +40,8 @@ def create_grid(packages, obstacles):
 
     for i in range(len(obstacles)):
         o = obstacles[i]
-        for j in range(o.x2 - o.x1):
-            for k in range(o.y2 - o.y1):
+        for j in range(o.x2 - o.x1 + 1):
+            for k in range(o.y2 - o.y1 + 1):
                 maze[99 - o.y1 - k][o.x1 + j] = -1
 
     return maze
