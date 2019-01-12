@@ -100,67 +100,138 @@ def astar(maze, start, end):
             open_list.append(child)
 
 
-def build_output(packages, sequence, maze, num_robots):
-    f = open('data/5a.out', 'w+')
-    robots = []
+def break_up_sequences_by_robot(packages, sequences, num_robots):
+	robots = []
+	while(len(sequences) < num_robots):
+		ind = 0
+		val = 0
+		for i in range(len(sequences)):
+			if(len(sequences[i])>val):
+				val = len(sequences[i])
+				ind = i
+		split = sequences[ind]
+		del sequences[ind]
+		sequences.append(split[len(split)//2:])
+		sequences.append(split[:len(split)//2])
 
-    j = 0
+	for i in range(num_robots):
+		r = Robot([],i,0, 0,0)
 
-    # if num robots greater than num sequences
-    if num_robots > len(sequence):
-        for i in range(num_robots):
-            if j < len(sequence):
-                r = utilities.Robot(sequence[i], 0, i)
-                j = j + 1
-            else:
-                r = utilities.Robot([], 0, i)
+	while(len(sequences)!=0):
+		instruction = sequences[0]
+		load = load(sequences[0],packages)
+		min_load = 10000000
+		ind = 0
+		for i in range(len(robots)):
+			if(robots[i].load<min_load):
+				min_load = robots[i].load
+				ind = i
 
-            robots.append(r)
+		robots[ind].instruction.append(instruction)
+		robots[ind].load+= load
+		del sequences[0]
+
+	return robots
+
+def build_output(packages, sequence, robots, maze):
+	f = open('data/5a.out', 'w+')
+
+	for sub in sequence:
+		curr_x = 0
+		curr_y = 0
+		for index in sub:
+			target_x = packages[index].x
+			target_y = packages[index].y
+			while(curr_x - target_x != 0 or curr_y - target_y != 0):
+				xdir = 0
+				ydir = 0
+				if curr_x > target_x:
+					xdir = -1
+				if curr_x < target_x:
+					xdir = 1
+				if curr_y > target_y:
+					ydir = -1
+				if curr_y < target_y:
+					ydir = 1
+				curr_x = curr_x + xdir
+				curr_y = curr_y + ydir
+				f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
+			f.write("pick " + str(packages[index].product_number) + '\n')
+
+		# Go back to 0, 0:
+		while(curr_x != 0 or curr_y != 0):
+			xdir = 0
+			ydir = 0
+			if curr_x > 0:
+				xdir = -1
+			if curr_x < 0:
+				xdir = 1
+			if curr_y > 0:
+				ydir = -1
+			if curr_y < 0:
+				ydir = 1
+			curr_x = curr_x + xdir
+			curr_y = curr_y + ydir
+			f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
+		for index in sub:
+			f.write("drop "+ str(packages[index].product_number) + '\n')
 
 
 
-    for sub in sequence:
-        curr_pose = origin
-        for i in sub:
-            target = (packages[i].x, packages[i].y)
-            if target != curr_pose:
-                path = astar(maze, curr_pose, target)
-                curr_pose = target
-                for j in range(len(path)):
-                    f.write("move " + str(path[j][0]) + " " + str(path[j][1]) + '\n')
-            f.write("pick " + str(packages[i].product_number) + '\n')
+	f = open('data/4a.out', 'w+')
+	num_packages_visited = 0
 
-        target = origin
-        path = astar(maze, curr_pose, target)
-        for j in range(len(path)):
-            f.write("move " + str(path[j][0]) + " " + str(path[j][1]) + '\n')
-        for index in sub:
-            f.write("drop " + str(packages[index].product_number) + '\n')
+	while(num_visited_packages < len(packages)):
+		curr_line = ""
+		for robot in robots:
+			# Check to see if we should return home!!!
+			if len(robot.instructions[0]) == robot.carry:
+				#Robot is dropping things home
+				if robot.x == 0 and robot.y == 0:
+					if robot.carry == 0:
+						del robot.instructions[0]
+					else:
+						curr_line += "drop " + str(packages[robot.instructions[0][robot.carry]].product_number + ';')
+						robot.carry-=1
+						continue
+
+				xdir = 0
+				ydir = 0
+				if robot.x > 0:
+					xdir = -1
+				if robot.x < 0:
+					xdir = 1
+				if robot.y > 0:
+					ydir = -1
+				if robot.y < 0:
+					ydir = 1
+				robot.x = robot.x + xdir
+				robot.y = robot.y + ydir
+				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';')
+				continue
 
 
+			target_x = packages[robot.instructions[0][robot.carry]].x
+			target_y = packages[robot.instructions[0][robot.carry]].y
+			if robot.x == target_x and robot.y == target_y:
+				curr_line += "pick " + str(packages[robot.instructions[0][robot.carry]].product_number + ';')
+				robot.carry+=1
 
-
-
-
-    origin = (0, 0)
-
-    for sub in sequence:
-        curr_pose = origin
-        for i in sub:
-            target = (packages[i].x, packages[i].y)
-            if target != curr_pose:
-                path = astar(maze, curr_pose, target)
-                curr_pose = target
-                for j in range(len(path)):
-                    f.write("move " + str(path[j][0]) + " " + str(path[j][1]) + '\n')
-            f.write("pick " + str(packages[i].product_number) + '\n')
-
-        target = origin
-        path = astar(maze, curr_pose, target)
-        for j in range(len(path)):
-            f.write("move " + str(path[j][0]) + " " + str(path[j][1]) + '\n')
-        for index in sub:
-            f.write("drop " + str(packages[index].product_number) + '\n')
+			else:
+				xdir = 0
+				ydir = 0
+				if robot.x > target_x:
+					xdir = -1
+				if robot.x < target_x:
+					xdir = 1
+				if robot.y > target_y:
+					ydir = -1
+				if robot.y < target_y:
+					ydir = 1
+				robot.x = robot.x + xdir
+				robot.y = robot.y + ydir
+				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';')
+		curr_line += '\n'
 
 
 def convert_cluster_to_sequence(packages, cluster, maze):
@@ -264,4 +335,6 @@ if __name__ == '__main__':
     print(clusters)
     sequence = convert_clusters_to_sequence(packages, clusters, maze)
     print(sequence)
-    build_output(packages, sequence, maze, num_r)
+
+    robots = break_up_sequences_by_robot(packages, sequence, num_r)
+    build_output(packages, sequence, robots, maze)
