@@ -11,6 +11,8 @@ def load (instruction, packages):
 def break_up_sequences_by_robot(packages, sequences, num_robots):
 	robots = []
 	while(len(sequences) < num_robots):
+		print((sequences))
+		print(num_robots)
 		ind = 0
 		val = 0
 		for i in range(len(sequences)):
@@ -19,8 +21,11 @@ def break_up_sequences_by_robot(packages, sequences, num_robots):
 				ind = i
 		split = sequences[ind]
 		del sequences[ind]
-		sequences.append(split[len(split)//2:])
-		sequences.append(split[:len(split)//2])
+		if(split[len(split)//2:] != []):
+			sequences.append(split[len(split)//2:])
+		if(split[:len(split)//2] != []):
+			sequences.append(split[:len(split)//2])
+		
 
 	for i in range(num_robots):
 		r = Robot([],i,0, 0,0)
@@ -114,7 +119,7 @@ def build_output(packages, robots):
 					ydir = 1
 				robot.x = robot.x + xdir
 				robot.y = robot.y + ydir
-				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';')
+				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';'
 				continue
 
 
@@ -137,7 +142,7 @@ def build_output(packages, robots):
 					ydir = 1
 				robot.x = robot.x + xdir
 				robot.y = robot.y + ydir
-				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';')
+				curr_line += "move " + str(robot.x) + " " + str(robot.y) + ';'
 		curr_line += '\n'
 
 
@@ -202,7 +207,7 @@ def get_clusters(packages):
 		weight_in_current_cluster = 0
 		while min_index != -1:
 			min_index = -1
-			min_cost = 1000 # define this later
+			min_cost = 1000000 # define this later
 			for i in range(len(packages)):
 				if packages_visited[i]==0 and weight_in_current_cluster + packages[i].weight <= 100:
 					# We haven't yet visited this package
