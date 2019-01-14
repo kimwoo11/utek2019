@@ -1,5 +1,5 @@
-# utek2019
-Code for the 2019 University of Toronto Engineering Kompetition programming challenge.\
+# UofT Engineering Competition 2019
+Code for the 2019 University of Toronto Engineering Kompetition (UTEK2019) programming challenge.\
 All teams were given 6 hours to complete the competition.
 
 ### Main Objective
