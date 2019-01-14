@@ -1,5 +1,6 @@
 import utilities
 
+
 class Node():
     """A node class for A* Pathfinding"""
 
@@ -88,7 +89,7 @@ def astar(maze, start, end):
             # Create the f, g, and h values
             child.g = current_node.g + 1
             child.h = ((child.position[0] - end_node.position[0]) ** 2) + (
-                        (child.position[1] - end_node.position[1]) ** 2)
+                    (child.position[1] - end_node.position[1]) ** 2)
             child.f = child.g + child.h
 
             # Child is already in the open list
@@ -148,7 +149,7 @@ def convert_cluster_to_sequence(packages, cluster, maze):
     return subsequence
 
 
-def distance(ind,packages,curr_x,curr_y, maze):
+def distance(ind, packages, curr_x, curr_y, maze):
     p = packages[ind]
     goal = (p.x, p.y)
     start = (curr_x, curr_y)
@@ -213,6 +214,7 @@ def part3(packages):
 
     return clusters
 
+
 if __name__ == '__main__':
     packages = []
     obstacles = []
@@ -225,4 +227,3 @@ if __name__ == '__main__':
     sequence = convert_clusters_to_sequence(packages, clusters, maze)
     print(sequence)
     build_output(packages, sequence, maze)
-

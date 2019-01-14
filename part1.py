@@ -13,7 +13,7 @@ def aggregate(filename):
     lines.sort(key=lambda x: x[2])
 
     # create new file to output
-    f = open("output/1a.out", "w+")
+    f = open("output/1c.out", "w+")
 
     # figure out which products are repeated
     num_of_product = {}
@@ -34,4 +34,4 @@ def aggregate(filename):
 
 
 if __name__ == "__main__":
-    aggregate("data/1a.in")
+    aggregate("submission_data/1c.in")
