@@ -1,4 +1,4 @@
-from utilities import parse_input
+from utilities import parse_input, Robot
 
 
 def distance(ind, packages, curr_x, curr_y):
@@ -11,8 +11,9 @@ def load(instruction, packages):
 
 def break_up_sequences_by_robot(packages, sequences, num_robots):
     robots = []
-    while (len(sequences) < num_robots):
-        print((sequences))
+    while (len(sequences) < int(num_robots)):
+        print(len(sequences) < num_robots)
+        print(len(sequences))
         print(num_robots)
         ind = 0
         val = 0
@@ -27,12 +28,13 @@ def break_up_sequences_by_robot(packages, sequences, num_robots):
         if (split[:len(split) // 2] != []):
             sequences.append(split[:len(split) // 2])
 
-    for i in range(num_robots):
+    for i in range(int(num_robots)):
         r = Robot([], i, 0, 0, 0)
+        robots.append(r)
 
     while (len(sequences) != 0):
         instruction = sequences[0]
-        load = load(sequences[0], packages)
+        load_ = load(sequences[0], packages)
         min_load = 10000000
         ind = 0
         for i in range(len(robots)):
@@ -40,8 +42,8 @@ def break_up_sequences_by_robot(packages, sequences, num_robots):
                 min_load = robots[i].load
                 ind = i
 
-        robots[ind].instruction.append(instruction)
-        robots[ind].load += load
+        robots[ind].instructions.append(instruction)
+        robots[ind].load += load_
         del sequences[0]
 
     return robots
@@ -49,50 +51,9 @@ def break_up_sequences_by_robot(packages, sequences, num_robots):
 
 def build_output(packages, robots):
     f = open('data/4a.out', 'w+')
-    for sub in sequence:
-        curr_x = 0
-        curr_y = 0
-        for index in sub:
-            target_x = packages[index].x
-            target_y = packages[index].y
-            while (curr_x - target_x != 0 or curr_y - target_y != 0):
-                xdir = 0
-                ydir = 0
-                if curr_x > target_x:
-                    xdir = -1
-                if curr_x < target_x:
-                    xdir = 1
-                if curr_y > target_y:
-                    ydir = -1
-                if curr_y < target_y:
-                    ydir = 1
-                curr_x = curr_x + xdir
-                curr_y = curr_y + ydir
-                f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
-            f.write("pick " + str(packages[index].product_number) + '\n')
-
-        # Go back to 0, 0:
-        while (curr_x != 0 or curr_y != 0):
-            xdir = 0
-            ydir = 0
-            if curr_x > 0:
-                xdir = -1
-            if curr_x < 0:
-                xdir = 1
-            if curr_y > 0:
-                ydir = -1
-            if curr_y < 0:
-                ydir = 1
-            curr_x = curr_x + xdir
-            curr_y = curr_y + ydir
-            f.write("move " + str(curr_x) + " " + str(curr_y) + '\n')
-        for index in sub:
-            f.write("drop " + str(packages[index].product_number) + '\n')
-
-    f = open('data/4a.out', 'w+')
     num_packages_visited = 0
 
-    while (num_visited_packages < len(packages)):
+    while (num_packages_visited < len(packages)):
         curr_line = ""
         for robot in robots:
             # Check to see if we should return home!!!
@@ -102,7 +63,8 @@ def build_output(packages, robots):
                     if robot.carry == 0:
                         del robot.instructions[0]
                     else:
-                        curr_line += "drop " + str(packages[robot.instructions[0][robot.carry]].product_number + ';')
+                        print(robot.instructions[0])
+                        curr_line += "drop " + str(packages[robot.instructions[0][robot.carry]].product_number) + ';'
                         robot.carry -= 1
                         continue
 
@@ -124,7 +86,7 @@ def build_output(packages, robots):
             target_x = packages[robot.instructions[0][robot.carry]].x
             target_y = packages[robot.instructions[0][robot.carry]].y
             if robot.x == target_x and robot.y == target_y:
-                curr_line += "pick " + str(packages[robot.instructions[0][robot.carry]].product_number + ';')
+                curr_line += "pick " + str(packages[robot.instructions[0][robot.carry]].product_number) + ';'
                 robot.carry += 1
 
             else:
