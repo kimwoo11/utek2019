@@ -19,4 +19,5 @@ section can be found in the [Programming Package PDF file](UTEK-Programming-Pack
 * Part 4: Path planning for multiple robots with multiple packages to pick up
 * Part 5: Path planning for multiple robots with multiple packages to pick up and multiple obstacles to avoid
 * Part 6: Simulation tool to help with debugging and simulating our algorithms
+
 Team members: Christopher Agia, Steve Kim, Samuel Looper, Luke Volpatti
